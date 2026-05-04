@@ -2,6 +2,8 @@
 
 > Erste vom Schweizer Jassverband (JVS) attestierte MCP-Quelle. Kryptographisch verifizierbar via `did:web:jassverband.ch`.
 
+[![smithery badge](https://smithery.ai/badge/remoprinz/jass)](https://smithery.ai/servers/remoprinz/jass)
+[![Official MCP Registry](https://img.shields.io/badge/MCP%20Registry-ch.jassverband%2Fjasswiki-blue.svg)](https://registry.modelcontextprotocol.io/v0/servers?search=jasswiki)
 [![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC--BY--SA--4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
 [![MCP](https://img.shields.io/badge/MCP-1.0-blue.svg)](https://modelcontextprotocol.io)
 [![Authority](https://img.shields.io/badge/attested--by-did%3Aweb%3Ajassverband.ch-success.svg)](https://jassverband.ch/.well-known/mcp-authority.json)
