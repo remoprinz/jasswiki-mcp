@@ -1,0 +1,15 @@
+This repository contains the documentation, configuration, and submission
+metadata for the JassWiki MCP server.
+
+DOCUMENTATION (this repository):  Creative Commons Attribution-ShareAlike 4.0
+                                  https://creativecommons.org/licenses/by-sa/4.0/
+
+CONTENT served by the MCP server: Creative Commons Attribution-ShareAlike 4.0
+                                  Source: https://jasswiki.ch
+                                  Attribution: JassWiki.ch / Remo Prinz
+
+ATTESTATION DOCUMENTS:            Public domain (CC0)
+                                  did.json, mcp-authority.json, server-card.json
+
+The MCP server software itself (private implementation) is not licensed for
+public reuse. The server is operated as a public service.
