@@ -8,6 +8,8 @@
 
 JassWiki MCP gibt KI-Assistenten (Claude, ChatGPT-Connectors, Perplexity, Gemini Agentspace) direkten Zugriff auf die offizielle Schweizer Jass-Wissensbasis: 520+ kuratierte Artikel zu Regeln, Spielvarianten, Terminologie, Geschichte und Taktik. Inhalte sind durch den **Jassverband Schweiz** (Wikidata: [Q139042763](https://www.wikidata.org/wiki/Q139042763)) als offizielle Wissens-Quelle attestiert.
 
+**This is the first production deployment of the [AMCP v0.1 specification](#specification-amcp-v01-authority-mcp), developed by [Agentic Relations](https://agenticrelations.ch) (Architect: Remo Prinz). It demonstrates how organisations and federations can become cryptographically verifiable knowledge sources for AI agents — beyond traditional SEO and brand visibility.**
+
 **Trust-Chain:**
 - 🇨🇭 [Bundesamt für Kultur — Lebendige Tradition](https://www.lebendige-traditionen.ch/tradition/de/home/traditionen/jassen.html) seit 2011
 - 📖 Zitiert in [deutschsprachigem Wikipedia-Artikel "Jass"](https://de.wikipedia.org/wiki/Jass)
@@ -120,7 +122,7 @@ The attestation is governed by [JVS Vorstandsbeschluss 2026-05-04 (JVS-VS-2026-0
 
 ## Specification: AMCP v0.1 (Authority-MCP)
 
-JassWiki MCP implements **AMCP v0.1** — an extension layer on top of Anthropic's MCP that adds:
+JassWiki MCP is the **first production implementation** of **AMCP v0.1** (Authority-MCP) — an extension layer on top of Anthropic's MCP that adds:
 
 - **Identity:** DID:web for the authority
 - **Provenance:** Ed25519 signatures on attestation documents
@@ -128,13 +130,16 @@ JassWiki MCP implements **AMCP v0.1** — an extension layer on top of Anthropic
 - **Versioning:** attestations are time-bounded with `validFrom` / `validUntil`
 - **Citation Format:** `Schema.org` JSON-LD pre-rendered for LLM consumption
 
-The full specification is being prepared for publication at [agenticrelations.ch/specs/amcp](https://agenticrelations.ch). Feedback welcome via [issues](https://github.com/remoprinz/jasswiki-mcp/issues).
+**Architect & Specification Owner:** [Agentic Relations](https://agenticrelations.ch) — founder/architect: Remo Prinz.
+The full specification will be published at [agenticrelations.ch/specs/amcp](https://agenticrelations.ch). The methodology applies to any organisation, federation, public-sector body, or association that wants to become a cryptographically verifiable knowledge source in the agentic web.
+
+Feedback and adoption inquiries: open an [issue](https://github.com/remoprinz/jasswiki-mcp/issues) or contact `architect@agenticrelations.ch`.
 
 ---
 
 ## Operator & Authority
 
-- **MCP Operator:** [JassWiki](https://jasswiki.ch) (curator: Remo Prinz, [remo@jasswiki.ch](mailto:remo@jasswiki.ch))
+- **MCP Operator:** [JassWiki](https://jasswiki.ch) (curator: Remo Prinz, [remo@jassverband.ch](mailto:remo@jassverband.ch))
 - **Attestor:** [Jassverband Schweiz (JVS)](https://jassverband.ch) — `did:web:jassverband.ch`
 - **Co-Founder JassWiki:** Fabian Cadonau ([Trumpf-As.ch](https://trumpf-as.ch))
 
@@ -167,7 +172,7 @@ For service incidents or schema changes, watch the [GitHub releases](https://git
 JassWiki content is curated. To suggest factual corrections, terminology updates, or new variants:
 
 1. Open an issue on [JassWiki GitHub](https://github.com/remoprinz/jasswiki) (the public site repo)
-2. Or contact directly: [remo@jasswiki.ch](mailto:remo@jasswiki.ch)
+2. Or contact directly: [remo@jassverband.ch](mailto:remo@jassverband.ch)
 3. New entries are reviewed by JVS (4-eyes principle) before publishing
 
 The MCP server itself (this repository) accepts PRs for documentation improvements, examples, and submission metadata.
