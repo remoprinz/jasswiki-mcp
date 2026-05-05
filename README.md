@@ -92,30 +92,62 @@ get_term_details(id="schieber")
 
 ---
 
-## Verifying the Authority Attestation
+## Verifying the Authority Attestation (W3C Verifiable Credential)
 
-The JassWiki MCP server is the first MCP service in Switzerland with cryptographically verifiable authority attestation. Any MCP client or third-party verifier can independently confirm:
+The JassWiki MCP server is the first MCP service in Switzerland with cryptographically verifiable authority attestation, expressed as a **W3C Verifiable Credential** (Data Model 2.0) signed with the **`eddsa-jcs-2022`** cryptosuite. Any standard W3C VC verification library can confirm it.
+
+### Quick verify with any W3C VC library
+
+The attestation document is a self-contained Verifiable Credential — fetch and verify in one step:
 
 ```bash
-# 1. Fetch the attestation document
-curl -s https://jassverband.ch/.well-known/mcp-authority.json -o attestation.json
+curl -s https://jassverband.ch/.well-known/mcp-authority.json
+```
 
-# 2. Fetch the detached Ed25519 signature
-curl -s https://jassverband.ch/.well-known/mcp-authority.sig -o attestation.sig.b64url
+The `proof.proofValue` field contains the signature in multibase base58btc format. Use any of:
+- **Node.js:** [`@digitalbazaar/vc`](https://github.com/digitalbazaar/vc) + [`@digitalbazaar/eddsa-jcs-2022-cryptosuite`](https://github.com/digitalbazaar/eddsa-jcs-2022-cryptosuite)
+- **TypeScript / Browser:** [`@veramo/credential-w3c`](https://veramo.io/) with `eddsa-jcs-2022` plugin
+- **Python:** [`pyld`](https://github.com/digitalbazaar/pyld) + [`PyNaCl`](https://pynacl.readthedocs.io/) (manual JCS implementation, see below)
+- **Rust:** [`ssi`](https://github.com/spruceid/ssi) crate
 
-# 3. Fetch the JVS public key (DID document)
-curl -s https://jassverband.ch/.well-known/did.json | jq -r '.verificationMethod[0].publicKeyJwk.x'
+### Manual verification (Python, no W3C VC library required)
 
-# 4. Verify (Python with PyNaCl)
-python3 <<'EOF'
-import json, base64, urllib.request, nacl.signing
-doc = json.load(open('attestation.json')); doc.pop('proof', None)
-canonical = json.dumps(doc, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode('utf-8')
-sig = base64.urlsafe_b64decode(open('attestation.sig.b64url').read().strip() + '==')
-pub_b64 = json.load(urllib.request.urlopen('https://jassverband.ch/.well-known/did.json'))['verificationMethod'][0]['publicKeyJwk']['x']
-nacl.signing.VerifyKey(base64.urlsafe_b64decode(pub_b64 + '==')).verify(canonical, sig)
-print('✓ Attestation cryptographically verified — JassWiki is officially attested by Jassverband Schweiz')
-EOF
+```bash
+pip install pynacl base58
+```
+
+```python
+import json, hashlib, urllib.request
+import nacl.signing, base58
+
+# 1. Fetch the VC + DID document
+vc = json.load(urllib.request.urlopen('https://jassverband.ch/.well-known/mcp-authority.json'))
+did = json.load(urllib.request.urlopen('https://jassverband.ch/.well-known/did.json'))
+
+# 2. Reconstruct the signed hash data per eddsa-jcs-2022
+def jcs(obj):
+    return json.dumps(obj, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode('utf-8')
+
+unsigned_doc = {k: v for k, v in vc.items() if k != 'proof'}
+proof_config = {k: v for k, v in vc['proof'].items() if k != 'proofValue'}
+
+doc_hash = hashlib.sha256(jcs(unsigned_doc)).digest()
+proof_hash = hashlib.sha256(jcs(proof_config)).digest()
+hash_data = proof_hash + doc_hash  # W3C VC Data Integrity ordering
+
+# 3. Decode signature from multibase base58btc
+proof_value = vc['proof']['proofValue']
+assert proof_value.startswith('z')  # 'z' = base58btc multibase prefix
+signature = base58.b58decode(proof_value[1:])
+
+# 4. Decode public key from DID document
+import base64
+pub_jwk_x = did['verificationMethod'][0]['publicKeyJwk']['x']
+public_key = base64.urlsafe_b64decode(pub_jwk_x + '==')
+
+# 5. Verify
+nacl.signing.VerifyKey(public_key).verify(hash_data, signature)
+print('✓ W3C VC verified — JassWiki MCP is officially attested by Jassverband Schweiz')
 ```
 
 The attestation is governed by [JVS Vorstandsbeschluss 2026-05-04 (JVS-VS-2026-05-04-AMCP-01)](https://jassverband.ch).
@@ -124,16 +156,24 @@ The attestation is governed by [JVS Vorstandsbeschluss 2026-05-04 (JVS-VS-2026-0
 
 ## Specification: AMCP v0.1 (Authority-MCP)
 
-JassWiki MCP is the **first production implementation** of **AMCP v0.1** (Authority-MCP) — an extension layer on top of Anthropic's MCP that adds:
+JassWiki MCP is the **first production implementation** of **AMCP v0.1** — *An Applied Profile of W3C Verifiable Credentials and DID:web for MCP Server Authority Attestation*.
 
-- **Identity:** DID:web for the authority
-- **Provenance:** Ed25519 signatures on attestation documents
-- **Wikidata Anchoring:** every domain entity has a QID
-- **Versioning:** attestations are time-bounded with `validFrom` / `validUntil`
-- **Citation Format:** `Schema.org` JSON-LD pre-rendered for LLM consumption
+AMCP is **not a new standard** — it is a thin profile that combines:
 
-**Architect & Specification Owner:** [Agentic Relations](https://agenticrelations.ch) — founder/architect: Remo Prinz.
-The full specification will be published at [agenticrelations.ch/specs/amcp](https://agenticrelations.ch). The methodology applies to any organisation, federation, public-sector body, or association that wants to become a cryptographically verifiable knowledge source in the agentic web.
+| Layer | Existing Standard |
+|---|---|
+| Identity of the authority | [W3C DID Core](https://www.w3.org/TR/did-1.0/) (`did:web` method) |
+| Cryptographic envelope | [W3C Verifiable Credentials Data Model 2.0](https://www.w3.org/TR/vc-data-model-2.0/) |
+| Signature suite | [`eddsa-jcs-2022`](https://w3c.github.io/vc-di-eddsa/) (Ed25519 + JCS canonicalization) |
+| Entity descriptions | [Schema.org](https://schema.org) + JSON-LD |
+| Canonical entity IDs | [Wikidata QIDs](https://www.wikidata.org/) |
+| Server protocol | [Anthropic MCP](https://modelcontextprotocol.io) |
+| Discovery | [HTTP Link header (RFC 8288)](https://datatracker.ietf.org/doc/html/rfc8288) + `.well-known/` |
+
+The contribution of AMCP is the *combination* — specifying how an organisation declares its official MCP server with cryptographic proof, Wikidata-anchored entity references, and a verifiable trust chain.
+
+**Spec owner & architect:** [Agentic Relations](https://agenticrelations.ch) — founder: Remo Prinz.
+The full specification (whitepaper) will be published at [agenticrelations.ch/specs/amcp](https://agenticrelations.ch). The methodology applies to any organisation, federation, public-sector body, or association that wants to become a cryptographically verifiable knowledge source in the agentic web.
 
 Feedback and adoption inquiries: open an [issue](https://github.com/remoprinz/jasswiki-mcp/issues) or contact `architect@agenticrelations.ch`.
 
