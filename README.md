@@ -173,7 +173,10 @@ AMCP is **not a new standard** — it is a thin profile that combines:
 The contribution of AMCP is the *combination* — specifying how an organisation declares its official MCP server with cryptographic proof, Wikidata-anchored entity references, and a verifiable trust chain.
 
 **Spec owner & architect:** [Agentic Relations](https://agenticrelations.ch) — founder: Remo Prinz.
-The full specification (whitepaper) will be published at [agenticrelations.ch/specs/amcp](https://agenticrelations.ch). The methodology applies to any organisation, federation, public-sector body, or association that wants to become a cryptographically verifiable knowledge source in the agentic web.
+
+📄 **Read the full specification:** [**AMCP v0.1 Working Draft**](./docs/amcp-v0.1-spec.md) (3,600 words; canonical URL `https://agenticrelations.ch/specs/amcp/v0.1`)
+
+The methodology applies to any organisation, federation, public-sector body, or association that wants to become a cryptographically verifiable knowledge source in the agentic web.
 
 Feedback and adoption inquiries: open an [issue](https://github.com/remoprinz/jasswiki-mcp/issues) or contact `architect@agenticrelations.ch`.
 
