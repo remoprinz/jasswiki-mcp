@@ -2,8 +2,8 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "ch.jassverband/jasswiki",
   "title": "JassWiki — Swiss Jass Authority (AMCP v0.1)",
-  "description": "First production Authority-MCP. Swiss Jass encyclopedia, attested by Jassverband Schweiz.",
-  "version": "1.0.1",
+  "description": "First production Authority-MCP. W3C VC attested by Jassverband Schweiz.",
+  "version": "1.0.2",
   "websiteUrl": "https://jasswiki.ch",
   "repository": {
     "url": "https://github.com/remoprinz/jasswiki-mcp",
